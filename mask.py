@@ -22,6 +22,11 @@ def main():
     # Tokenize input
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     inputs = tokenizer(text, return_tensors="tf")
+    # to see the tokenized input, uncomment the following line
+    # token_ids = inputs["input_ids"][0].numpy().tolist()
+    # tokens = tokenizer.convert_ids_to_tokens(token_ids)
+    # print(f"tokens = {tokens}")
+
     mask_token_index = get_mask_token_index(tokenizer.mask_token_id, inputs)
     if mask_token_index is None:
         sys.exit(f"Input must include mask token {tokenizer.mask_token}.")
@@ -59,9 +64,8 @@ def get_color_for_attention_score(attention_score):
     Return a tuple of three integers representing a shade of gray for the
     given `attention_score`. Each value should be in the range [0, 255].
     """
-    # TODO: Implement this function
-    raise NotImplementedError
-
+    level = int(round(attention_score.numpy() * 255))
+    return (level, level, level)    
 
 
 def visualize_attentions(tokens, attentions):
@@ -75,6 +79,18 @@ def visualize_attentions(tokens, attentions):
     (starting count from 1).
     """
     # TODO: Update this function to produce diagrams for all layers and heads.
+    layer_size = len(attentions)
+    head_size = len(attentions[0][0])
+    for i in range(layer_size):
+        for j in range(head_size):
+            generate_diagram(
+                i+1,
+                j+1,
+                tokens,
+                attentions[i][0][j]
+            )
+
+
     generate_diagram(
         1,
         1,
